@@ -5,9 +5,7 @@ order: 4
 ---
 - ### Hi there 👋, I'm Aye486!
 
-  - 🏫  _BSc in Computer Science_.
-  - 💻  I work on C / C++ / Java / Python n.
-  - 🧠  I used to take internship as an iOS developer at Bytedance Techonology.
-  - 🏖️  I will go to Shenzhen and work as a back-end engineer at Tencent.
-
-
+  - 🏫  _ Studying at Qilu University of Technology_.
+  - 💻  I work on C / C++ / Java / Python .
+  - 🧠  Studied in Computer Science.
+  - 🏖️  I like playing games and food.
