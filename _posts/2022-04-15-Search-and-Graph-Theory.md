@@ -13,8 +13,6 @@ math: false
 mermaid: true
 ---
 
-# **搜索与图论模板**
-
 本篇文章旨在介绍搜索与图论模板。
 
 包括：树与图的存储，拓扑排序，朴素dijkstra，堆优化版dijkstra，Bellman-Ford算法，spfa 算法（队列优化的Bellman-Ford算法），spfa判断图中是否存在负环，floyd算法，朴素版prim算法，Kruskal算法，染色法判别二分图，匈牙利算法
