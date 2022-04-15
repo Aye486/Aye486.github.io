@@ -8,7 +8,7 @@ author: Aye486
 
 toc: true
 comments: true
-typora-root-url: ../../Aye.github.io
+typora-root-url: ../../Aye486.github.io
 math: false
 mermaid: true
 
