@@ -4,11 +4,11 @@ date: 2022-03-26 10:34:00 +0800
 categories: [随笔]
 tags: [生活]
 pin: true
-author: Aye86
+author: Aye486
 
 toc: true
 comments: true
-typora-root-url: ../../Aye.github.io
+typora-root-url: ../../aye.github.io
 math: false
 mermaid: true
 
