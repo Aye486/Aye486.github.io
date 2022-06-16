@@ -62,7 +62,7 @@ C：controller(控制层)
 
 ## UML图（大致构思）：
 
-![image-20220616220132832](/assets/blog_res/2022-06-15-chartroom-.assets/image-20220616220132832.png)
+![image-20220616224447338](/assets/blog_res/2022-06-15-chartroom.assets/image-20220616224447338.png)
 
 # 总结
 
