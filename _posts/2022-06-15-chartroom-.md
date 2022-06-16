@@ -36,15 +36,15 @@ mermaid: true
 
 ## 三、模块功能
 
-## [Client端]([JAVA-Socket通信 聊天室（客户端） | Aye486](https://aye486.github.io/posts/client/))
+## Client端
 
 ![image-20220616220948267](/assets/blog_res/2022-06-15-chartroom-.assets/image-20220616220948267.png)
 
-## [Server端](https://aye486.github.io/posts/Service/)
+## Server端
 
 ![image-20220616221011109](/assets/blog_res/2022-06-15-chartroom-.assets/image-20220616221011109.png)
 
-## [工具类](https://aye486.github.io/posts/common/)
+## 工具类
 
 ![image-20220616221027858](/assets/blog_res/2022-06-15-chartroom-.assets/image-20220616221027858.png)
 
