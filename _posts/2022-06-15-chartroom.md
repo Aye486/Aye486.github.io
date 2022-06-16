@@ -38,15 +38,15 @@ mermaid: true
 
 ## Client端
 
-![image-20220616220948267](/assets/blog_res/2022-06-15-chartroom-.assets/image-20220616220948267.png)
+![image-20220616224254939](/assets/blog_res/2022-06-15-chartroom.assets/image-20220616224254939.png)
 
 ## Server端
 
-![image-20220616221011109](/assets/blog_res/2022-06-15-chartroom-.assets/image-20220616221011109.png)
+![image-20220616224324313](/assets/blog_res/2022-06-15-chartroom.assets/image-20220616224324313.png)
 
 ## 工具类
 
-![image-20220616221027858](/assets/blog_res/2022-06-15-chartroom-.assets/image-20220616221027858.png)
+![image-20220616224241729](/assets/blog_res/2022-06-15-chartroom.assets/image-20220616224241729.png)
 
 <!--具体功能其查看其他相关博客-->
 
