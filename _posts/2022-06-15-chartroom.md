@@ -36,15 +36,27 @@ mermaid: true
 
 ## 三、模块功能
 
-### Client端
+### 服务器与客户端之间的交互简图
+
+![无标题](/assets/blog_res/2022-06-15-chartroom.assets/%E6%97%A0%E6%A0%87%E9%A2%98.png)
+
+### 服务器与客户端的功能缩略图
+
+![image-20220617114406232](/assets/blog_res/2022-06-15-chartroom.assets/image-20220617114406232.png)
+
+![image-20220617114451101](/assets/blog_res/2022-06-15-chartroom.assets/image-20220617114451101.png)
+
+### 具体框架
+
+#### Client端
 
 ![image-20220617112313989](/assets/blog_res/2022-06-15-chartroom.assets/image-20220617112313989.png)
 
-### Server端
+#### Server端
 
 ![image-20220617112331772](/assets/blog_res/2022-06-15-chartroom.assets/image-20220617112331772.png)
 
-### 工具类
+#### 工具类
 
 ![image-20220617112346610](/assets/blog_res/2022-06-15-chartroom.assets/image-20220617112346610.png)
 
