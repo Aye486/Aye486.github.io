@@ -1,0 +1,496 @@
+<!DOCTYPE html><html lang="zh-CN" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="prefer-datetime-locale" content="Asia/Jinan"><meta name="generator" content="Jekyll v4.2.2" /><meta property="og:title" content="协程简介" /><meta name="author" content="Aye486" /><meta property="og:locale" content="zh_CN" /><meta name="description" content="基本概念" /><meta property="og:description" content="基本概念" /><link rel="canonical" href="/posts/%E5%8D%8F%E7%A8%8B%E5%92%8Clibco/" /><meta property="og:url" content="/posts/%E5%8D%8F%E7%A8%8B%E5%92%8Clibco/" /><meta property="og:site_name" content="Aye486" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2022-06-25T13:02:00+00:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="协程简介" /><meta name="twitter:site" content="@Aye486" /><meta name="twitter:creator" content="@Aye486" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Aye486"},"dateModified":"2022-06-25T14:26:38+00:00","datePublished":"2022-06-25T13:02:00+00:00","description":"基本概念","headline":"协程简介","mainEntityOfPage":{"@type":"WebPage","@id":"/posts/%E5%8D%8F%E7%A8%8B%E5%92%8Clibco/"},"url":"/posts/%E5%8D%8F%E7%A8%8B%E5%92%8Clibco/"}</script><title>协程简介 | Aye486</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="Aye486"><meta name="application-name" content="Aye486"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get MODE_ATTR() { return "data-mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } static get ID() { return "mode-toggle"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_ATTR); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage({ direction: ModeToggle.ID, message: this.modeStatus }, "*"); } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.notify(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc" data-topbar-visible="true"><div id="sidebar" class="d-flex flex-column align-items-end"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" class="mx-auto"> <img src="/assets/config/avatar.jpg" alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title mt-3"> <a href="/">Aye486</a></div><div class="site-subtitle font-italic">这里是Aye486的博客～</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>首页</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>分类</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tags ml-xl-3 mr-xl-3 unloaded"></i> <span>标签</span> </a><li class="nav-item"> <a href="/archives/" class="nav-link"> <i class="fa-fw fas fa-archive ml-xl-3 mr-xl-3 unloaded"></i> <span>归档</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info ml-xl-3 mr-xl-3 unloaded"></i> <span>关于</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/Aye486" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href="https://twitter.com/Aye486" aria-label="twitter" target="_blank" rel="noopener"> <i class="fab fa-twitter"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['cwy1143','163.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper"><div id="topbar" class="container d-flex align-items-center justify-content-between h-100 pl-3 pr-3 pl-md-4 pr-md-4"> <span id="breadcrumb"> <span> <a href="/"> 首页 </a> </span> <span>协程简介</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> 文章</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="搜索..."> </span> <span id="search-cancel" >取消</span></div></div><div id="main-wrapper" class="d-flex justify-content-center"><div id="main" class="container pl-xl-4 pr-xl-4"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-9 pr-xl-4"><div class="post pl-1 pr-1 pl-md-2 pr-md-2"><h1 data-toc-skip>协程简介</h1><div class="post-meta text-muted"> <span> 发表于 <em class="" data-ts="1656162120" data-df="YYYY-MM-DD" data-toggle="tooltip" data-placement="bottom"> 2022-06-25 </em> </span> <span> 更新于 <em class="" data-ts="1656167198" data-df="YYYY-MM-DD" data-toggle="tooltip" data-placement="bottom"> 2022-06-25 </em> </span><div class="d-flex justify-content-between"> <span> 作者 <em> Aye486 </em> </span><div> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="9350 字"> <em>51 分钟</em>阅读</span></div></div></div><div class="post-content"><h2 id="基本概念"><span class="mr-2">基本概念</span><a href="#基本概念" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><h4 id="协程"><span class="mr-2">协程</span><a href="#协程" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4><blockquote><p>在这里略过进程和线程的基本概念，默认读者了解</p></blockquote><p>协程不是被操作系统内核所管理，而完全是由程序所控制（也就是在用户态执行）。这样带来的好处就是性能得到了很大的提升，不会像线程那样需要上下文切换来消耗资源（用户态和内核态的切换），因此<strong>协程的开销远远小于线程的开销</strong>。</p><ul><li>协程本质上就是用户态线程，将调度的代码在用户态重新实现。因为子程序切换不是线程切换而是由程序自身控制，没有线程切换的开销，所以协程有极高的执行效率。协程通常是纯软件实现的多任务，与CPU和操作系统通常没有关系，跨平台，跨体系架构。<li>协程在执行过程中，可以调用别的协程自己则中途退出执行，之后又从调用别的协程的地方恢复执行。这有点像操作系统的线程，执行过程中可能被挂起，让位于别的线程执行，稍后又从挂起的地方恢复执行。<li>对于线程而言，其上下文存储在内核栈上。线程的上下文切换必须先进入内核态并切换上下文, 这就造成了调度开销。线程的结构体存在于内核中，在pthread_create时需要进入内核态，频繁创建开销大。</ul><h4 id="协程的优点与缺点"><span class="mr-2">协程的优点与缺点</span><a href="#协程的优点与缺点" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4><p>优点：</p><ul><li>跨平台体系结构<li>无需线程上下文切换的开销（相比线程切换）<li>无需原子操作锁定及同步的开销（相比多线程程序）<li>方便切换控制流，简化编程模型（调用与回调可以在同一个地方写完）<li>高并发+高扩展性+低成本：高性能CPU可以启用非常多的协程，很适合用于高并发处理。</ul><p>缺点：</p><ul><li><h6 id="无法利用多核资源协程的本质是个单线程它不能将一个多核处理器的的多个核同时用上协程需要和进程配合才能运行在多cpu上线程多核超线程参见csapp第三版192并发和并行p17当然我们日常所编写的绝大部分应用都没有这个必要除非是cpu密集型应用">无法利用多核资源：协程的本质是个单线程，它不能将一个<strong>多核处理器</strong>的的多个核同时用上,协程需要和进程配合才能运行在多CPU上。（线程、多核、超线程参见CSAPP第三版1.9.2并发和并行P17）当然我们日常所编写的绝大部分应用都没有这个必要，除非是cpu密集型应用。</h6><li><p>进行阻塞（Blocking）操作（如IO时）会阻塞掉整个程序。（https://cloud.tencent.com/developer/article/1684951）</p><div class="table-wrapper"><table><thead><tr><th> <th>进程<th>线程<th>协程<tbody><tr><td>切换者<td>OS<td>OS<td>用户<tr><td>切换时机<td>根据操作系统自己定义的切换策略<td>根据操作系统自己定义的切换策略<td>用户自己的程序决定<tr><td>切换内容<td>页全局目录、内核栈、硬件上下文（进程空间相关知识）<td>内核栈、硬件上下文<td>硬件上下文<tr><td>切换内容的保存位置<td>保存在内核中<td>保存在内核中<td>保存于用户自己定义的用户栈或者堆中<tr><td>切换过程<td>用户态-内核态-用户态<td>用户态-内核态-用户态<td>用户态（无陷入内核态）<tr><td>切换效率<td>低<td>中<td>高</table></div></ul><h3 id="协程实现相关概念"><span class="mr-2">协程实现相关概念</span><a href="#协程实现相关概念" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><h4 id="函数栈切换"><span class="mr-2">函数栈切换</span><a href="#函数栈切换" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4><p>Linux 使用虚拟地址空间，大大增加了进程的寻址空间，由低地址到高地址分别为：</p><ul><li>只读段/代码段：只能读，不可写；可执行代码、字符串字面值、只读变量<li>数据段：已初始化且初值非0全局变量、静态变量的空间<li>BSS(Block Started Symbol)段：未初始化或初值为0的全局变量和静态局部变量<li>堆 ：就是平时所说的动态内存， malloc/new 大部分都来源于此<li>文件映射区域 ：如动态库、共享内存等映射物理空间的内存，一般是 mmap 函数所分配的虚拟地址空间<li>栈：用于维护函数调用的上下文空间；局部变量、函数参数、返回地址等<li>内核虚拟空间：用户代码不可见的内存区域，由内核管理(页表就存放在内核虚拟空间)</ul><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/%E8%BF%9B%E7%A8%8B%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4-16561662405141-16561662478363.png" alt="进程地址空间" data-proofer-ignore></p><h5 id="栈帧"><span class="mr-2">栈帧</span><a href="#栈帧" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h5><p>栈帧是指为一个函数调用单独分配的那部分栈空间。比如，当运行中的程序调用另一个函数时，就要进入一个新的栈帧，原来函数的栈帧称为调用者函数的帧，新的栈帧称为被调用函数的帧（当前帧）。被调用的函数运行结束后当前帧全部回收，回到调用者的帧。</p><p>栈帧的详细结构如下图所示：</p><p>函数A调用函数B，A就是调用者函数，B就是被调用函数</p><p>（参考CSAPP 3.7 过程【3.7.1 运行时栈】P164）</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211108143152821-16561662645464-16561662696796.png" alt="image-20211108143152821" data-proofer-ignore></p><h5 id="函数调用时的espebp"><span class="mr-2">函数调用时的esp/ebp</span><a href="#函数调用时的espebp" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h5><p>当进行函数调用的时候，除了将参数挨个入栈、将<strong>返回地址（指明当B返回的时候，要从A程序的哪个位置(程序指令在内存中的地址)继续执行，参见程序计数器相关：https://www.zhihu.com/question/22609253）</strong>入栈以外，接下来就是移动esp和ebp指针</p><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="n">func</span> <span class="nf">A</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="n">B</span><span class="p">();</span>
+  <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>	<span class="c1">// 调用完函数，需要执行的下一条语句。该语句在程序运行时，最终变成机器可以执行的指令，该指令存储在内存中的位置就是返回地址。那么到底所谓的该指令长什么样子呢？那就是回到前面说的代码段（Code Segment）的地方，PC程序计数器中的内容就是一个地址，当前执行指令的地址（样子就是CS:IP，Code Segment:Instruction Pointer），代码段（CS）里面的内容是机器(指代处理器)都能通过使用指令集来看懂的指令，是二进制内容！</span>
+  <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">func</span> <span class="nf">B</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">z</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>参考资料：</p><p><strong>1、CS:IP是什么？</strong></p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20220623214812934-16561662973709-165616629878411.png" alt="image-20220623214812934" data-proofer-ignore></p><p><strong>2、程序计数器</strong></p><p>https://www.zhihu.com/question/22609253</p><p><strong>3、<a href="https://stackoverflow.com/questions/27452946/what-does-the-text-segment-in-a-programs-memory-refer-to">What does the text segment in a program’s memory refer to? </a></strong></p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/Screen%20Shot%202022-06-23%20at%2021.49.01-165616630927512-165616631249514.png" alt="Screen Shot 2022-06-23 at 21.49.01" data-proofer-ignore></p><p>将调用者(A)函数的ebp入栈(push ebp)，然后将调用者函数的栈顶指针ESP赋值给被调函数的EBP(作为被调函数的栈底,move ebp,esp)，之后便可以将局部变量push的方式入栈了，结果如下图所示：</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211108145036017-165616632188015-165616633503217.png" alt="image-20211108145036017" data-proofer-ignore></p><p>此时,EBP寄存器处于一个非常重要的位置,该寄存器中存放着一个地址(原EBP入栈后的栈顶),以该地址为基准,向上(栈底方向)能获取返回地址、参数值,向下(栈顶方向)能获取函数的局部变量值,而该地址处又存放着上一层函数调用时的EBP值;</p><p>一般规律,SS:[ebp+4]处为被调函数的返回地址,SS:[EBP+8]处为传递给被调函数的第一个参数(最后一个入栈的参数,此处假设其占用4字节内存)的值,SS:[EBP-4]处为被调函数中的第一个局部变量,SS:[EBP]处为上一层EBP值;由于EBP中的地址处总是”上一层函数调用时的EBP值”,而在每一层函数调用中,都能通过当时的EBP值”向上(栈底方向)能获取返回地址、参数值,向下(栈顶方向)能获取被调函数的局部变量值”;</p><p>如此递归，就形成了函数调用栈；</p><h5 id="函数调用栈"><span class="mr-2">函数调用栈</span><a href="#函数调用栈" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h5><p>不管是较早的帧，还是调用者的帧，还是当前帧，它们的结构是完全一样的，因为每个帧都是基于一个函数，帧随着函数的生命周期产生、发展和消亡。这里用到了两个寄存器，<code class="language-plaintext highlighter-rouge">%ebp</code>是帧指针（帧寄存器），它总是指向当前帧的底部；<code class="language-plaintext highlighter-rouge">%esp</code>是栈指针（栈寄存器），它总是指向当前帧的顶部。这两个寄存器用来定位当前帧中的所有空间，在后面的代码中将会经常出现。<strong>编译器需要根据IA32指令集的规则小心翼翼地调整这两个寄存器的值，一旦出错，参数传递、函数返回都可能出现问题。</strong></p><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre><td class="rouge-code"><pre><span class="kt">int</span> <span class="nf">caller</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">arg1</span> <span class="o">=</span> <span class="mi">534</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">arg2</span> <span class="o">=</span> <span class="mi">1057</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">swap_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">arg1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arg2</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">diff</span> <span class="o">=</span> <span class="n">arg1</span> <span class="o">-</span> <span class="n">arg2</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">sum</span> <span class="o">*</span> <span class="n">diff</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">swap_add</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">xp</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">yp</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="o">*</span><span class="n">xp</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="o">*</span><span class="n">yp</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">xp</span> <span class="o">=</span> <span class="n">y</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">yp</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">}</span> 
+</pre></table></code></div></div><p>首先，程序从<code class="language-plaintext highlighter-rouge">caller</code>开始运行，为了详细说明每一行程序都做了什么操作，我们将<code class="language-plaintext highlighter-rouge">caller</code>函数的C代码编译成汇编码，并给每一句附上注释：</p><pre><code class="language-assembly">1    caller:
+2        pushl %ebp              # 将caller函数的上一层函数的ebp位置进行保存
+3        movl %esp, %ebp         # 将这时候的esp位置设置为ebp位置（栈帧底部）
+4        subl $24, %esp          # 分配 24 bytes 空间（后续介绍）
+5        movl $534, -4(%ebp)     # 分配局部变量1为534
+6        movl $1057, -8(%ebp)    # 分配局部变量2为1057
+7        leal -8(%ebp), %eax     # 计算&amp;arg2并放入%eax
+8        movl %eax, 4(%esp)      # 将&amp;arg2放入参数2位置(从右往左放入)
+9        leal -4(%ebp), %eax     # 计算&amp;arg1并放入%eax
+10       movl %eax, (%esp)       # 将&amp;arg1放入参数1位置(从右往左放入)
+11       call swap_add           # 调用swap_add函数
+12       ...
+</code></pre><p>第3行执行完如下：</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211108151511806-165616634712818-165616634999920.png" alt="image-20211108151511806" data-proofer-ignore></p><p>第10行执行完如下：</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211108152241026-165616636022121-165616636293523.png" alt="image-20211108152241026" data-proofer-ignore></p><p>来解释栈帧为什么申请了24字节的空间。在现代处理器中，栈帧必须16字节对齐，就是说栈底和栈顶的地址必须是16的整数倍。至于为什么会有这样的要求，请查看文章<a href="https://www.jianshu.com/p/b20c8838b929">《联合、数据对齐和缓冲区溢出攻击》</a>。现在，既然要求是16的整数倍，24字节肯定是不够的，仔细观察栈帧除了这额外申请的24字节空间外，还有最初压栈的<code class="language-plaintext highlighter-rouge">%ebp</code>寄存器占用4字节，以及调用子函数前保存的返回地址占用4字节，加起来正好32字节，实现了16字节对齐。如下图所示。</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211108152437853-165616637792224-165616638069426.png" alt="image-20211108152437853" data-proofer-ignore></p><pre><code class="language-assembly">1    caller:
+2        pushl %ebp              # 将caller函数的上一层函数的ebp位置进行保存
+3        movl %esp, %ebp         # 将这时候的esp位置设置为ebp位置（栈帧底部）
+4        subl $24, %esp          # 分配 24 bytes 空间（后续介绍）
+5        movl $534, -4(%ebp)     # 分配局部变量1为534
+6        movl $1057, -8(%ebp)    # 分配局部变量2为1057
+7        leal -8(%ebp), %eax     # 计算&amp;arg2并放入%eax
+8        movl %eax, 4(%esp)      # 将&amp;arg2放入参数2位置(从右往左放入)
+9        leal -4(%ebp), %eax     # 计算&amp;arg1并放入%eax
+10       movl %eax, (%esp)       # 将&amp;arg1放入参数1位置(从右往左放入)
+11       call swap_add           # 调用swap_add函数
+12       ...
+</code></pre><p>接下来执行第11行： call swap_add</p><p><code class="language-plaintext highlighter-rouge">call</code>指令不仅仅是跳转到子函数的位置，而且还要为子函数的正确返回做准备。事实上，<code class="language-plaintext highlighter-rouge">call</code>指令可以分为两步，第一步将当前程序段的下一行代码的地址入栈，第二步才是跳转到子函数的代码段，相当于如下两行指令</p><pre><code class="language-assembly">pushl [当执行结束返回到caller时，接下来需要执行的代码的地址]
+jmp swap_add
+</code></pre><p>在上面的代码中就是 int diff = arg1 - arg2; 这段代码的地址。</p><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre><td class="rouge-code"><pre><span class="kt">int</span> <span class="nf">swap_add</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">xp</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">yp</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="o">*</span><span class="n">xp</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="o">*</span><span class="n">yp</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">xp</span> <span class="o">=</span> <span class="n">y</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">yp</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">}</span> 
+
+<span class="kt">int</span> <span class="nf">caller</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">arg1</span> <span class="o">=</span> <span class="mi">534</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">arg2</span> <span class="o">=</span> <span class="mi">1057</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">swap_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">arg1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arg2</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">diff</span> <span class="o">=</span> <span class="n">arg1</span> <span class="o">-</span> <span class="n">arg2</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">sum</span> <span class="o">*</span> <span class="n">diff</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>栈帧如下：</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211108152802093-165616639288627-165616639574329.png" alt="image-20211108152802093" data-proofer-ignore></p><p>接下来看<code class="language-plaintext highlighter-rouge">swap_add</code>函数的汇编代码：也就是被调函数</p><pre><code class="language-assembly">1    swap_add:
+2        pushl %ebp              # 保存旧的%ebp，即caller的%ebp
+3        movl %esp, %ebp         # 将这时的%esp设置为%ebp，也叫设置为swap_add函数的ebp
+4        pushl %ebx              # 将%ebx入栈保存
+
+5        movl 8(%ebp), %edx      #Get xp
+6        movl 12(%ebp), %ecx     #Get yp
+7        movl (%edx), %ebx       #Get x
+8        movl (%ecx), %eax       #Get y
+9        movl %eax, (%edx)       #Store y at xp
+10       movl %ebx, (%ecx)       #Store x at yp
+11       addl %ebx, %eax         #Return value = x+y
+
+12       popl %ebx               #Restore %ebx
+13       popl %ebp               #Restore %ebp
+14       ret                     #Return
+</code></pre><p>2-4行为预处理部分，和前面分析过的预处理相似，保存旧的帧指针，设置新的帧指针，但多了一步：将第4行的%ebx寄存器入栈。该操作是为了保存<code class="language-plaintext highlighter-rouge">%ebx</code>寄存器的值，以便在函数结束时恢复原值，即第12行的<code class="language-plaintext highlighter-rouge">popl %ebx</code>。</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211108153849692-165616641321030-165616641643232.png" alt="image-20211108153849692" data-proofer-ignore></p><p>知识点：寄存器的使用惯例</p><p>为什么<code class="language-plaintext highlighter-rouge">caller</code>中没有保存<code class="language-plaintext highlighter-rouge">%ebx</code>而<code class="language-plaintext highlighter-rouge">swap_add</code>中却保存了呢？这涉及到IA32指令集的寄存器使用惯例，这个惯例保证了函数调用时寄存器的值不会丢失或紊乱。</p><blockquote><p><code class="language-plaintext highlighter-rouge">%eax</code>、<code class="language-plaintext highlighter-rouge">%edx</code>和<code class="language-plaintext highlighter-rouge">%ecx</code>称为<strong>调用者保存</strong>寄存器，被调用者使用这三个寄存器时不必担心它们原来的值有没有保存下来，这是调用者自己应该负责的事情。</p><p><code class="language-plaintext highlighter-rouge">%ebx</code>、<code class="language-plaintext highlighter-rouge">%esi</code>和<code class="language-plaintext highlighter-rouge">%edi</code>称为<strong>被调用者保存</strong>寄存器，被调用者如果想要使用它们，必须在开始时保存它们的值并在结束时恢复它们的值，一般通过压栈和出栈来实现。</p></blockquote><p>这就可以解释我们的疑问了。由于<code class="language-plaintext highlighter-rouge">%ebx</code>是被调用者保存寄存器，因此在<code class="language-plaintext highlighter-rouge">swap_add</code>中我们通过<code class="language-plaintext highlighter-rouge">pushl %ebx</code>和<code class="language-plaintext highlighter-rouge">popl %ebx</code>来保存该寄存器的值在函数执行前后不变。</p><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre><span class="kt">int</span> <span class="nf">swap_add</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">xp</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">yp</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="o">*</span><span class="n">xp</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="o">*</span><span class="n">yp</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">xp</span> <span class="o">=</span> <span class="n">y</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">yp</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><pre><code class="language-assembly">1    swap_add:
+2        pushl %ebp              # 保存旧的%ebp，即caller的%ebp
+3        movl %esp, %ebp         # 将这时的%esp设置为%ebp，也叫设置为swap_add函数的ebp
+4        pushl %ebx              # 将%ebx入栈保存
+
+5        movl 8(%ebp), %edx      #Get xp
+6        movl 12(%ebp), %ecx     #Get yp
+7        movl (%edx), %ebx       #Get x
+8        movl (%ecx), %eax       #Get y
+9        movl %eax, (%edx)       #Store y at xp
+10       movl %ebx, (%ecx)       #Store x at yp
+11       addl %ebx, %eax         #Return value = x+y
+
+12       popl %ebx               #Restore %ebx
+13       popl %ebp               #Restore %ebp
+14       ret                     #Return
+</code></pre><p>5~11行为<code class="language-plaintext highlighter-rouge">swap_add</code>函数的功能实现代码。略过不看，这里没有进行栈的push操作。</p><p>12~14行为结束代码，做一些函数的收尾工作。11行执行结束的函数栈帧如下：</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211108154822613-165616643303633-165616643589635.png" alt="image-20211108154822613" data-proofer-ignore></p><p>首先第12行恢复<code class="language-plaintext highlighter-rouge">%ebx</code>寄存器的值，接着第13行恢复<code class="language-plaintext highlighter-rouge">%ebp</code>寄存器的值，最后<code class="language-plaintext highlighter-rouge">ret</code>返回。而<code class="language-plaintext highlighter-rouge">ret</code>指令也分为两步，第一步取出当前栈顶的值（即int diff = arg1 - arg2;这段代码的地址），第二步将这个值作为跳转指令的地址跳转，相当于下面两行代码：</p><pre><code class="language-assembly">popl %edx
+jmp %edx
+</code></pre><p><code class="language-plaintext highlighter-rouge">ret</code>之后将会执行<code class="language-plaintext highlighter-rouge">call swap_add</code>指令紧跟着的下一行代码。</p><p>接下来给出<code class="language-plaintext highlighter-rouge">caller</code>函数剩下的汇编代码：（即call swap_add后的代码）</p><pre><code class="language-assembly">11       call swap_add
+12       movl -4(%ebp), %edx
+13       subl -8(%ebp), %edx
+14       imull %edx, %eax
+15       leave
+16       ret
+</code></pre><p>12~14行都是在完成之后的一些运算而已，略过。但是15行用了一个没见过的指令<code class="language-plaintext highlighter-rouge">leave</code>，这又是什么意思呢？</p><p>我们来分析一下，这段代码和<code class="language-plaintext highlighter-rouge">swap_add</code>最后三行代码相比，少了两句<code class="language-plaintext highlighter-rouge">popl %ebx</code>和<code class="language-plaintext highlighter-rouge">popl %ebp</code>，多了一句<code class="language-plaintext highlighter-rouge">leave</code>。首先，<code class="language-plaintext highlighter-rouge">popl %ebx</code>不用考虑了，因为在<code class="language-plaintext highlighter-rouge">caller</code>的开头并没有<code class="language-plaintext highlighter-rouge">pushl %ebx</code>，因此也就没必要<code class="language-plaintext highlighter-rouge">popl %ebx</code>。那么我猜测<code class="language-plaintext highlighter-rouge">leave</code>是否替代了<code class="language-plaintext highlighter-rouge">popl %ebp</code>的功能呢？之所以这样猜测，首先我们得弄懂<code class="language-plaintext highlighter-rouge">popl %ebp</code>到底是什么功能。</p><p>很简单，<strong>每个函数结束前需要将栈恢复到函数调用前的样子，其实就是恢复两个指针——帧指针和栈指针的位置</strong>。<code class="language-plaintext highlighter-rouge">popl %ebp</code>的作用就是恢复帧指针的位置。而栈指针<code class="language-plaintext highlighter-rouge">%esp</code>呢？似乎没有看到哪条指令把它恢复。让我们再仔细捋一遍。先看子函数<code class="language-plaintext highlighter-rouge">swap_add</code>运行过程中的栈指针。使栈指针变化的只有四条语句，2、4行的<code class="language-plaintext highlighter-rouge">pushl</code>指令和12、13行的<code class="language-plaintext highlighter-rouge">popl</code>指令，而且两对指令对栈指针的影响正好对消，于是栈指针在函数结束时已经回到了最初的位置，因此根本不需要额外的调整。</p><p>再考虑<code class="language-plaintext highlighter-rouge">caller</code>函数，<strong>与<code class="language-plaintext highlighter-rouge">swap_add</code>不同的地方在于第4行申请了24字节的栈空间</strong>，即手动将<code class="language-plaintext highlighter-rouge">%esp</code>寄存器的值减去了24。这就导致函数结束时栈指针无法回到最初的位置，需要我们手动将它恢复，<code class="language-plaintext highlighter-rouge">leave</code>指令就是这个作用。该指令相当于下面两条指令的合成：</p><pre><code class="language-assembly">movl %ebp, %esp   # 手动恢复栈顶指针位置
+popl %ebp         # 恢复上一个函数的ebp的位置
+</code></pre><h4 id="有栈协程"><span class="mr-2">有栈协程</span><a href="#有栈协程" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4><blockquote><p>协程切换时主要保存的上下文环境就是指寄存器的内容、栈帧的内容。</p></blockquote><h5 id="独立栈"><span class="mr-2">独立栈</span><a href="#独立栈" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h5><p>独立栈指的是在所有协程运行的过程中，它们用的栈帧是自己的栈，这块栈的地址的内容不会让其他协程进行读写。</p><p>缺点：独立栈往往会更加的<strong>浪费</strong>内存。因为，我们需要为每一个协程预先分配一个栈空间，但是问题是协程不一定会用完这个栈空间，而那些多出来的栈空间就是被浪费掉了的。而且空间太小也会有爆栈的隐患。</p><p>优点：每次切换协程的时候，不需要对栈进行拷贝。（相比于共享栈）</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211114211112749-165616645017736-165616645347638.png" alt="image-20211114211112749" data-proofer-ignore></p><h5 id="共享栈"><span class="mr-2">共享栈</span><a href="#共享栈" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h5><p>共享栈指的是在所有协程运行的过程中，它们用的任务栈是同一个栈。</p><p>优点：可以更加的节省内存。因为，我们只需要让协程使用这个共享的栈即可，然后，当协程挂起的时候，依据当前协程使用的栈空间大小来分配内存备份协程的栈内容。</p><p>缺点：就会使得每次换入和换出协程的时候，都要进行协程的栈数据的拷贝。</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211114213728751-165616646235939-165616646576741.png" alt="image-20211114213728751" data-proofer-ignore></p><h2 id="协程切换"><span class="mr-2">协程切换</span><a href="#协程切换" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>libco使用：https://blog.csdn.net/arbboter/article/details/101375476</p><h3 id="协程环境"><span class="mr-2">协程环境</span><a href="#协程环境" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>数量对应关系来说，协程之于线程，相当于线程之于进程，一个进程可以包含多个线程，而一个线程中可以包含多个协程。以libco为例，线程中用于管理协程的结构体为<code class="language-plaintext highlighter-rouge">stCoRoutineEnv_t</code>（环境），它在该线程中第一个协程创建的时候进行初始化。 每个线程中都只有一个<code class="language-plaintext highlighter-rouge">stCoRoutineEnv_t</code>实例，线程可以通过该<code class="language-plaintext highlighter-rouge">stCoRoutineEnv_t</code>实例了解现在有哪些协程，哪个协程正在运行，以及下一个运行的协程是哪个。</p><p>简单来说，一个线程对应一个stCoRoutineEnv_t结构，一个stCoRoutineEnv_t结构对应多个协程。在第一次创建协程的时候会对stCoRoutineEnv_t进行初始化，并自动将当前线程执行的上下文空间为主协程，然后再创建真正的用户自己定义的协程。</p><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">stCoRoutineEnv_t</span>
+<span class="p">{</span>
+    <span class="n">stCoRoutine_t</span> <span class="o">*</span><span class="n">pCallStack</span><span class="p">[</span> <span class="mi">128</span> <span class="p">];</span> <span class="c1">// 保存当前栈中的协程，上限128个</span>
+    <span class="kt">int</span> <span class="n">iCallStackSize</span><span class="p">;</span>  <span class="c1">// 表示当前在运行的协程的下一个位置，即cur_co_runtine_index + 1</span>
+    <span class="n">stCoEpoll_t</span> <span class="o">*</span><span class="n">pEpoll</span><span class="p">;</span> <span class="c1">//用于协程时间片切换</span>
+
+    <span class="c1">//for copy stack log lastco and nextco</span>
+    <span class="n">stCoRoutine_t</span><span class="o">*</span> <span class="n">pending_co</span><span class="p">;</span>
+    <span class="n">stCoRoutine_t</span><span class="o">*</span> <span class="n">occupy_co</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><h3 id="协程核心切换实现"><span class="mr-2">协程核心切换实现</span><a href="#协程核心切换实现" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>首先是一个协程对应的它的上下文coctx_t的初始化如下：</p><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre><td class="rouge-code"><pre><span class="kt">int</span> <span class="nf">coctx_make</span><span class="p">(</span> <span class="n">coctx_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="n">coctx_pfn_t</span> <span class="n">pfn</span><span class="p">,</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">s1</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">//make room for coctx_param</span>
+    <span class="c1">// 获取(栈顶 - param size)的指针，栈顶和sp指针之间用于保存函数参数</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">sp</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">ss_sp</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">ss_size</span> <span class="o">-</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">coctx_param_t</span><span class="p">);</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)((</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">sp</span> <span class="o">&amp;</span> <span class="o">-</span><span class="mi">16L</span><span class="p">);</span> <span class="c1">// 用于16位对齐</span>
+ 
+    <span class="c1">// 将参数填入到param中</span>
+    <span class="n">coctx_param_t</span><span class="o">*</span> <span class="n">param</span> <span class="o">=</span> <span class="p">(</span><span class="n">coctx_param_t</span><span class="o">*</span><span class="p">)</span><span class="n">sp</span> <span class="p">;</span>
+    <span class="n">param</span><span class="o">-&gt;</span><span class="n">s1</span> <span class="o">=</span> <span class="n">s</span><span class="p">;</span>
+    <span class="n">param</span><span class="o">-&gt;</span><span class="n">s2</span> <span class="o">=</span> <span class="n">s1</span><span class="p">;</span>
+
+    <span class="n">memset</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">regs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">regs</span><span class="p">));</span>
+    <span class="c1">// 为什么要 - sizeof(void*)呢？ 用于保存返回地址</span>
+    <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">regs</span><span class="p">[</span> <span class="n">kESP</span> <span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)(</span><span class="n">sp</span><span class="p">)</span> <span class="o">-</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">);</span>
+    <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">regs</span><span class="p">[</span> <span class="n">kEIP</span> <span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">pfn</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>这段代码主要是做了什么呢？</p><ol><li>先给<code class="language-plaintext highlighter-rouge">coctx_pfn_t</code>函数预留2个参数的大小，并4位地址对齐<li>将参数填入到预存的参数中<li><code class="language-plaintext highlighter-rouge">regs[kEIP]</code>中保存了<code class="language-plaintext highlighter-rouge">pfn</code>的地址，<code class="language-plaintext highlighter-rouge">regs[kESP]</code>中则保存了栈顶指针 - 4个字节的大小的地址。这预留的4个字节用于保存<code class="language-plaintext highlighter-rouge">return address</code>。</ol><p>现在我们来看下协程切换的核心 <strong>coctx_swap</strong>，这个函数是使用汇编实现的。主要分为保存当前栈空间上下文的寄存器，并写入即将到来的栈空间上下文的寄存器两个步骤。</p><p>先看一下执行汇编程序前的栈帧情况。<code class="language-plaintext highlighter-rouge">esp</code>寄存器指向<code class="language-plaintext highlighter-rouge">return address</code>。</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211114232746933-165616647872442-165616648133544.png" alt="image-20211114232746933" data-proofer-ignore></p><pre><code class="language-assembly">//----- --------
+// 32 bit
+// | regs[0]: ret |
+// | regs[1]: ebx |
+// | regs[2]: ecx |
+// | regs[3]: edx |
+// | regs[4]: edi |
+// | regs[5]: esi |
+// | regs[6]: ebp |
+// | regs[7]: eax |  = esp
+
+coctx_swap:
+1    leal 4(%esp), %eax // eax = esp + 4 保存co_swap栈空间的cur_ctx的地址到eax
+2    movl 4(%esp), %esp  // esp = *(esp+4) = &amp;cur_ctx 将cur_ctx这个地址赋值给esp。
+3    leal 32(%esp), %esp // parm a : &amp;regs[7] + sizeof(void*)  
+                        // esp=&amp;reg[7]+sizeof(void*) 移动esp的位置，为增加
+                        // 为后续pushl的时候esp从高地址到低地址移动准备
+4    pushl %eax // cur_ctx-&gt;regs[ESP] = %eax = returnAddress + 4 
+5    pushl %ebp // cur_ctx-&gt;regs[EBX] = %ebp
+6    pushl %esi // cur_ctx-&gt;regs[ESI] = %esi
+7    pushl %edi // cur_ctx-&gt;regs[EDI] = %edi
+8    pushl %edx // cur_ctx-&gt;regs[EDX] = %edx
+9    pushl %ecx // cur_ctx-&gt;regs[ECX] = %ecx
+10   pushl %ebx // cur_ctx-&gt;regs[EBX] = %ebx
+11   pushl -4(%eax) // cur_ctx-&gt;regs[EIP] = return address 保存return address
+</code></pre><p>1、其中的cur_ctx是一个堆的地址，里面的内容如下：</p><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="c1">// 栈切换的时候需要保存的寄存器空间</span>
+<span class="k">struct</span> <span class="nc">coctx_t</span>
+<span class="p">{</span>
+<span class="cp">#if defined(__i386__)
+</span>    <span class="kt">void</span> <span class="o">*</span><span class="n">regs</span><span class="p">[</span> <span class="mi">8</span> <span class="p">];</span>
+<span class="cp">#else
+</span>    <span class="kt">void</span> <span class="o">*</span><span class="n">regs</span><span class="p">[</span> <span class="mi">14</span> <span class="p">];</span>
+<span class="cp">#endif
+</span>    <span class="kt">size_t</span> <span class="n">ss_size</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">ss_sp</span><span class="p">;</span>    
+<span class="p">};</span>
+</pre></table></code></div></div><p>2、执行完第2句后，如下：</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211115180330921-165616649283845-165616649556347.png" alt="image-20211115180330921" data-proofer-ignore></p><p>3、执行完第3句后，如下：</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211115180343208-165616650127548-165616650324750.png" alt="image-20211115180343208" data-proofer-ignore></p><p>4、然后就是pushl的过程，通过该指令，esp向上移动，挨个保存寄存器内容。</p><p>下面是恢复<code class="language-plaintext highlighter-rouge">pend_ctx</code>中的寄存器信息到<code class="language-plaintext highlighter-rouge">cpu</code>寄存器中</p><pre><code class="language-assembly">    movl 4(%eax), %esp //parm b -&gt; &amp;regs[0]
+                       // esp=&amp;pend_ctx 同样的，将pending_ctx的esp弄过去
+    popl %eax  //%eax= pend_ctx-&gt;regs[EIP] = pfunc_t地址，通过popl就是反向的操作
+    		  // popl本身就是低地址到高地址，所以不需要提前移动esp的位置
+    popl %ebx  //%ebx = pend_ctx-&gt;regs[EBX]
+    popl %ecx  //%ecx = pend_ctx-&gt;regs[ECX]
+    popl %edx  //%edx = pend_ctx-&gt;regs[EDX]
+    popl %edi  //%edi = pend_ctx-&gt;regs[EDI]
+    popl %esi  //%esi = pend_ctx-&gt;regs[ESI]
+    popl %ebp  //%ebp = pend_ctx-&gt;regs[EBP]
+    popl %esp  //%ebp = pend_ctx-&gt;regs[ESP] 即 (char*) sp - sizeof(void*)
+    pushl %eax //set ret func addr
+               // return address = %eax = pfunc_t地址
+    xorl %eax, %eax
+    ret // popl %eip 即跳转到pfunc_t地址执行
+</code></pre><h3 id="汇编栈帧切换时的注意事项"><span class="mr-2">汇编栈帧切换时的注意事项</span><a href="#汇编栈帧切换时的注意事项" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>libco里面的swap函数里面大量用到push(pushl)和pop指令（如下所示），然而在一些其他的协程库里面的swap函数却使用大量的mov指令而非push/pop指令，为什么？</p><pre><code class="language-assembly">coctx_swap:
+1    leal 4(%esp), %eax // eax = esp + 4 保存co_swap栈空间的cur_ctx的地址到eax
+2    movl 4(%esp), %esp  // esp = *(esp+4) = &amp;cur_ctx 将cur_ctx这个地址赋值给esp。
+3    leal 32(%esp), %esp // parm a : &amp;regs[7] + sizeof(void*)  
+                        // esp=&amp;reg[7]+sizeof(void*) 移动esp的位置，为增加
+                        // 为后续pushl的时候esp从高地址到低地址移动准备
+4    pushl %eax // cur_ctx-&gt;regs[ESP] = %eax = returnAddress + 4 
+5    pushl %ebp // cur_ctx-&gt;regs[EBX] = %ebp
+6    pushl %esi // cur_ctx-&gt;regs[ESI] = %esi
+7    pushl %edi // cur_ctx-&gt;regs[EDI] = %edi
+8    pushl %edx // cur_ctx-&gt;regs[EDX] = %edx
+9    pushl %ecx // cur_ctx-&gt;regs[ECX] = %ecx
+10   pushl %ebx // cur_ctx-&gt;regs[EBX] = %ebx
+11   pushl -4(%eax) // cur_ctx-&gt;regs[EIP] = return address 保存return address
+</code></pre><p>原因：栈指针的使用方式违反Sys V ABI约定</p><p>注：应用程序二进制接口（Application Binary Interface，ABI）</p><blockquote><p>The end of the input argument area shall be aligned on a 16 (32 or 64, if __m256 or __m512 is passed on stack) byte boundary. In other words, the value (%esp + 4) is always a multiple of 16 (32 or 64) when control is transferred to the function entry point. <strong>The stack pointer, %esp, always points to the end of the latest allocated stack frame.</strong></p><p>— Intel386-psABI-1.1:2.2.2 The Stack Frame</p></blockquote><blockquote><p><strong>The stack pointer, %rsp, always points to the end of the latest allocated stack frame.</strong></p><p>— Sys V ABI AMD64 Version 1.0:3.2.2 The Stack Frame</p></blockquote><p>不管是i386还是sys V的ABI都提到了The stack pointer, %rsp, always points to the end of the latest allocated stack frame.</p><p>即用户空间程序的栈指针必须时刻指到运行栈的<a href="https://zh.wikipedia.org/wiki/堆栈#操作">栈顶</a>，而<a href="https://github.com/Tencent/libco/blob/v1.0/coctx_swap.S#L27">coctx_swap.S</a>中却使用栈指针直接对位于堆中的数据结构进行寻址内存操作，这违反了ABI约定。</p><p>而在Linux信号处理手册中可以看到：</p><blockquote><p><strong>By default, the signal handler is invoked on the normal process stack.</strong> It is possible to arrange that the signal handler uses an alternate stack; see sigalstack(2) for a discussion of how to do this and when it might be useful.</p><p>— man 7 signal : Signal dispositions</p></blockquote><p>也就是说，用pop方式实现的汇编代码，在有一个时刻出现了esp并不在栈顶的情况，要理解这一点，必须把ebp和esp绑定起来看，即esp在下图所示的时刻和ebp变得“毫无对应关系”，这会导致严重的后果。比如说此时用户态收到信号进入内核态，如果信号处理的时候使用了该esp指针，然而该esp指针的push操作仅仅只能维持sizeof(struct coctx_t)大小，显然很可能会出现问题，因为在正常情况下，esp的push时所在的栈空间都是远大于sizeof(struct coctx_t)的（即使使用共享栈的情况下）。</p><p><img data-src="/assets/blog_res/2022-06-25-%E5%8D%8F%E7%A8%8B%E5%92%8Clibco.assets/image-20211115180354606-165616651721251-165616652000153.png" alt="image-20211115180354606" data-proofer-ignore></p><p>当然查了相关资料后了解到libco内部版本早已解决了这个问题，只是在开源版本里面仍然保留了这个bug。</p><h2 id="协程上层管理"><span class="mr-2">协程上层管理</span><a href="#协程上层管理" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p><strong>了解了协程的实现原理之后，上层管理可以自己选择自己喜欢的方式，除了直接选择使用共享栈和独立栈的方式以外，甚至可以通过判断栈空间的大小来比较灵活地自动选择模式，以及进行一些具体业务强相关的协程库优化，从而得以让性能提高。</strong></p><h3 id="协程模块数据结构"><span class="mr-2">协程模块数据结构</span><a href="#协程模块数据结构" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>协程控制块stCoRoutine_t</p><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">stCoRoutine_t</span>
+<span class="p">{</span>
+    <span class="n">stCoRoutineEnv_t</span> <span class="o">*</span><span class="n">env</span><span class="p">;</span> <span class="c1">// 即协程执行的环境，libco协程一旦创建便跟对应线程绑定了，不支持在不同线程间迁移，这里env即同属于一个线程所有协程的执行环境，包括了当前运行协程、嵌套调用的协程栈，和一个epoll的封装结构。这个结构是跟运行的线程绑定了的，运行在同一个线程上的各协程是共享该结构的，是个全局性的资源。</span>
+    <span class="n">pfn_co_routine_t</span> <span class="n">pfn</span><span class="p">;</span> <span class="c1">// 实际等待执行的协程函数</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">;</span> <span class="c1">// 上面协程函数的参数</span>
+    <span class="n">coctx_t</span> <span class="n">ctx</span><span class="p">;</span> <span class="c1">// 上下文，即ESP、EBP、EIP和其他通用寄存器的值</span>
+
+    <span class="c1">// 一些状态和标志变量</span>
+    <span class="kt">char</span> <span class="n">cStart</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">cEnd</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">cIsMain</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">cEnableSysHook</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">cIsShareStack</span><span class="p">;</span>
+
+    <span class="kt">void</span> <span class="o">*</span><span class="n">pvEnv</span><span class="p">;</span> <span class="c1">// 保存程序系统环境变量的指针</span>
+
+    <span class="c1">//char sRunStack[ 1024 * 128 ];</span>
+    <span class="n">stStackMem_t</span><span class="o">*</span> <span class="n">stack_mem</span><span class="p">;</span> <span class="c1">// 协程运行时的栈内存，这个栈内存是固定的 128KB 的大小。</span>
+
+
+    <span class="c1">//save stack buffer while confilct on same stack_buffer;</span>
+    <span class="c1">// 共享栈模式中使用</span>
+    <span class="kt">char</span><span class="o">*</span> <span class="n">stack_sp</span><span class="p">;</span> 
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">save_size</span><span class="p">;</span>
+    <span class="kt">char</span><span class="o">*</span> <span class="n">save_buffer</span><span class="p">;</span>
+
+    <span class="n">stCoSpec_t</span> <span class="n">aSpec</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+<span class="p">};</span>
+</pre></table></code></div></div><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="c1">// 已经介绍过，略</span>
+<span class="k">struct</span> <span class="nc">stCoRoutineEnv_t</span>
+<span class="p">{</span>
+    <span class="n">stCoRoutine_t</span> <span class="o">*</span><span class="n">pCallStack</span><span class="p">[</span> <span class="mi">128</span> <span class="p">];</span>
+    <span class="kt">int</span> <span class="n">iCallStackSize</span><span class="p">;</span>
+    <span class="n">stCoEpoll_t</span> <span class="o">*</span><span class="n">pEpoll</span><span class="p">;</span>
+
+    <span class="c1">//for copy stack log lastco and nextco</span>
+    <span class="n">stCoRoutine_t</span><span class="o">*</span> <span class="n">pending_co</span><span class="p">;</span>
+    <span class="n">stCoRoutine_t</span><span class="o">*</span> <span class="n">occupy_co</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="c1">// 栈切换的时候需要保存的寄存器空间</span>
+<span class="k">struct</span> <span class="nc">coctx_t</span>
+<span class="p">{</span>
+<span class="cp">#if defined(__i386__)
+</span>    <span class="kt">void</span> <span class="o">*</span><span class="n">regs</span><span class="p">[</span> <span class="mi">8</span> <span class="p">];</span>
+<span class="cp">#else
+</span>    <span class="kt">void</span> <span class="o">*</span><span class="n">regs</span><span class="p">[</span> <span class="mi">14</span> <span class="p">];</span>
+<span class="cp">#endif
+</span>    <span class="kt">size_t</span> <span class="n">ss_size</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">ss_sp</span><span class="p">;</span>    
+<span class="p">};</span>
+</pre></table></code></div></div><ul><li><p>stack_sp、save_size、save_buffer：这里要提到实现 stackful 协程（与之相对的还有一种stackless协程）的两种技术：Separate coroutine stacks 和 Copying the stack（又叫共享栈）。这三个变量就是用来实现这两种技术的。</p><ul><li>实现细节上，前者为每一个协程分配一个单独的、固定大小的栈；而后者则仅为正在运行的协程分配栈内存，当协程被调度切换出去时，就把它实际占用的栈内存 copy 保存到一个单独分配的缓冲区；当被切出去的协程再次调度执行时，再一次 copy 将原来保存的栈内存恢复到那个共享的、固定大小的栈内存空间。<li>如果是独享栈模式，分配在堆中的一块作为当前协程栈帧的内存 stack_mem，这块内存的默认大小为 128K。<li>如果是共享栈模式，协程切换的时候，用来拷贝存储当前共享栈内容的 save_buffer，长度为实际的共享栈使用长度。<li>通常情况下，一个协程实际占用的（从 esp 到栈底）栈空间，相比预分配的这个栈大小（比如 libco 的 128KB）会小得多；这样一来， copying stack 的实现方案所占用的内存便会少很多。当然，协程切换时拷贝内存的开销有些场景下也是很大的。因此两种方案各有利弊，而 libco 则同时实现了两种方案，默认使用前者，也允许用户在创建协程时指定使用共享栈。</ul></ul><h3 id="创建协程create"><span class="mr-2">创建协程(create)</span><a href="#创建协程create" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre><td class="rouge-code"><pre><span class="kt">int</span> <span class="nf">co_create</span><span class="p">(</span> <span class="n">stCoRoutine_t</span> <span class="o">**</span><span class="n">ppco</span><span class="p">,</span><span class="k">const</span> <span class="n">stCoRoutineAttr_t</span> <span class="o">*</span><span class="n">attr</span><span class="p">,</span><span class="n">pfn_co_routine_t</span> <span class="n">pfn</span><span class="p">,</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">co_get_curr_thread_env</span><span class="p">()</span> <span class="p">)</span> 
+    <span class="p">{</span>
+        <span class="n">co_init_curr_thread_env</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="n">stCoRoutine_t</span> <span class="o">*</span><span class="n">co</span> <span class="o">=</span> <span class="n">co_create_env</span><span class="p">(</span> <span class="n">co_get_curr_thread_env</span><span class="p">(),</span> <span class="n">attr</span><span class="p">,</span> <span class="n">pfn</span><span class="p">,</span><span class="n">arg</span> <span class="p">);</span>
+    <span class="o">*</span><span class="n">ppco</span> <span class="o">=</span> <span class="n">co</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>调用 co_create 将协程创建出来后，这时候它还没有启动，也即是说我们传递的 routine 函数还没有被调用。实质上，这个函数内部仅仅是分配并初始化 stCoRoutine_t 结构体、设置任务函数指针、分配一段“栈”内存，以及分配和初始化 coctx_t。</p><ul><li>ppco：输出参数，co_create内部为新协程分配一个协程控制块，ppco将指向这个分配的协程控制块。<li>attr：指定要创建协程的属性（栈大小、指向共享栈的指针（使用共享栈模式））<li>pfn：协程的任务（业务逻辑）函数<li>arg：传递给任务函数的参数</ul><h3 id="启动协程resume"><span class="mr-2">启动协程(resume)</span><a href="#启动协程resume" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="nf">co_resume</span><span class="p">(</span> <span class="n">stCoRoutine_t</span> <span class="o">*</span><span class="n">co</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">stCoRoutineEnv_t</span> <span class="o">*</span><span class="n">env</span> <span class="o">=</span> <span class="n">co</span><span class="o">-&gt;</span><span class="n">env</span><span class="p">;</span>
+    <span class="n">stCoRoutine_t</span> <span class="o">*</span><span class="n">lpCurrRoutine</span> <span class="o">=</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">pCallStack</span><span class="p">[</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">iCallStackSize</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">];</span>
+    <span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">co</span><span class="o">-&gt;</span><span class="n">cStart</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">coctx_make</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">co</span><span class="o">-&gt;</span><span class="n">ctx</span><span class="p">,(</span><span class="n">coctx_pfn_t</span><span class="p">)</span><span class="n">CoRoutineFunc</span><span class="p">,</span><span class="n">co</span><span class="p">,</span><span class="mi">0</span> <span class="p">);</span>
+        <span class="n">co</span><span class="o">-&gt;</span><span class="n">cStart</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">env</span><span class="o">-&gt;</span><span class="n">pCallStack</span><span class="p">[</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">iCallStackSize</span><span class="o">++</span> <span class="p">]</span> <span class="o">=</span> <span class="n">co</span><span class="p">;</span>
+    <span class="n">co_swap</span><span class="p">(</span> <span class="n">lpCurrRoutine</span><span class="p">,</span> <span class="n">co</span> <span class="p">);</span>
+<span class="p">}</span>	
+</pre></table></code></div></div><p>在调用 co_create 创建协程返回成功后，便可以调用 co_resume 函数将它启动了。</p><ul><li>取当前协程控制块指针，将待启动的协程压入pCallStack栈，然后co_swap切换到指向的新协程上取执行，co_swap不会就此返回，而是要等当前执行的协程主动让出cpu时才会让新的协程切换上下文来执行自己的内容。</ul><h3 id="挂起协程yield"><span class="mr-2">挂起协程(yield)</span><a href="#挂起协程yield" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="nf">co_yield_env</span><span class="p">(</span> <span class="n">stCoRoutineEnv_t</span> <span class="o">*</span><span class="n">env</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">stCoRoutine_t</span> <span class="o">*</span><span class="n">last</span> <span class="o">=</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">pCallStack</span><span class="p">[</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">iCallStackSize</span> <span class="o">-</span> <span class="mi">2</span> <span class="p">];</span>
+    <span class="n">stCoRoutine_t</span> <span class="o">*</span><span class="n">curr</span> <span class="o">=</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">pCallStack</span><span class="p">[</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">iCallStackSize</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">];</span>
+    <span class="n">env</span><span class="o">-&gt;</span><span class="n">iCallStackSize</span><span class="o">--</span><span class="p">;</span>
+    <span class="n">co_swap</span><span class="p">(</span> <span class="n">curr</span><span class="p">,</span> <span class="n">last</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>在非对称协程理论，yield 与 resume 是个相对的操作。A 协程 resume 启动了 B 协程，那么只有当 B 协程执行 yield 操作时才会返回到 A 协程。在上一节剖析协程启动函数 co_resume() 时，也提到了该函数内部 co_swap() 会执行被调协程的代码。只有被调协程 yield 让出 CPU，调用者协程的 co_swap() 函数才能返回到原点，即返回到原来 co_resume() 内的位置。<li>在被调协程要让出 CPU 时，会将它的 stCoRoutine_t 从 pCallStack 弹出，“栈指针” iCallStackSize 减 1，然后 co_swap() 切换 CPU 上下文到原来被挂起的调用者协程恢复执行。这里“被挂起的调用者协程”，即是调用者 co_resume() 中切换 CPU 上下文被挂起的那个协程。<li>同一个线程上所有协程是共享一个 stCoRoutineEnv_t 结构的，因此任意协程的 co-&gt;env 指向的结构都相同。</ul><h3 id="切换协程switch"><span class="mr-2">切换协程(switch)</span><a href="#切换协程switch" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><ul><li>上面的启动协程和挂起协程都设计协程的切换，本质是上下文的切换，发生在co_swap()中。<ul><li>如果是独享栈模式：将当前协程的上下文存好，读取下一协程的上下文。<li>如果是共享栈模式：libco对共享栈做了个优化，可以申请多个共享栈循环使用，当目标协程所记录的共享栈没有被其它协程占用的时候，整个切换过程和独享栈模式一致。否则就是：将协程的栈空间内容从共享栈拷贝到自己的save_buffer中，将下一协程的save_buffer中的栈内容拷贝到共享栈中，将当前协程的上下文存好，读取下一协程上下文。</ul><li>协程的本质是，使用ContextSwap，来代替汇编中函数call调用，在保存寄存器上下文后，把需要执行的协程入口push到栈上。</ul><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="nf">co_swap</span><span class="p">(</span><span class="n">stCoRoutine_t</span><span class="o">*</span> <span class="n">curr</span><span class="p">,</span> <span class="n">stCoRoutine_t</span><span class="o">*</span> <span class="n">pending_co</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">stCoRoutineEnv_t</span><span class="o">*</span> <span class="n">env</span> <span class="o">=</span> <span class="n">co_get_curr_thread_env</span><span class="p">();</span>
+
+    <span class="c1">//get curr stack sp</span>
+    <span class="c1">// 略</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>这里起寄存器拷贝切换作用的coctx_swap函数，是用汇编来实现的。</p><ul><li>coctx_swap接受两个参数，第一个是当前协程的coctx_t指针，第二个参数是待切入的协程的coctx_t指针。该函数调用前还处于第一个协程的环境，调用之后就变成另一个协程的环境了。</ul><div class="language-c++ highlighter-rouge"><div class="code-header"> <span data-label-text="C++"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="k">extern</span> <span class="s">"C"</span>
+<span class="p">{</span>
+    <span class="k">extern</span> <span class="kt">void</span> <span class="n">coctx_swap</span><span class="p">(</span> <span class="n">coctx_t</span> <span class="o">*</span><span class="p">,</span><span class="n">coctx_t</span><span class="o">*</span> <span class="p">)</span> <span class="k">asm</span><span class="p">(</span><span class="s">"coctx_swap"</span><span class="p">);</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>coctx_swap不再介绍</p><h3 id="协程的事件管理"><span class="mr-2">协程的事件管理</span><a href="#协程的事件管理" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>https://segmentfault.com/a/1190000012834756</p><p>https://segmentfault.com/a/1190000012656741</p><h3 id="hook系统"><span class="mr-2">hook系统</span><a href="#hook系统" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>libco库通过仅有的几个函数接口 co_create/co_resume/co_yield 再配合 co_poll，可以支持同步或者异步的写法，如线程库一样轻松。同时库里面提供了socket族函数的hook，使得后台逻辑服务几乎不用修改逻辑代码就可以完成异步化改造。</strong></p><h4 id="静态链接"><span class="mr-2">静态链接</span><a href="#静态链接" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4><p>在linux系统中，使用以下命令将源代码编译成可执行文件，源代码经过 预处理，编译，汇编，链接的过程最终生成可执行文件。一个简单的编译命令如下：</p><div class="language-shell highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>gcc <span class="nt">-o</span> hello hello.c main.c <span class="nt">-lcolib</span>
+</pre></table></code></div></div><p><img data-src="./协程和libco.assets/Screen Shot 2021-11-08 at 2.26.13 AM.png" alt="Screen Shot 2021-11-08 at 2.26.13 AM" data-proofer-ignore></p><p>使用静态库有许多的缺点：</p><ol><li>可执行文件大小过大，造成硬盘的浪费<li>如果库文件有更新，则依赖该库文件的可执行文件必须重新编译后，才能应用该更新<li>假设有多个可执行文件都依赖于该库文件，那么每个可执行文件的<code class="language-plaintext highlighter-rouge">.code</code>段都会包含相同的机器码，造成内存的浪费</ol><h4 id="动态链接"><span class="mr-2">动态链接</span><a href="#动态链接" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4><p>为了解决静态链接的缺点，就出现了动态链接的概念。动态库这个大家都不会陌生，比如<code class="language-plaintext highlighter-rouge">Windows</code>的<code class="language-plaintext highlighter-rouge">dll</code>文件，<code class="language-plaintext highlighter-rouge">Linux</code>的<code class="language-plaintext highlighter-rouge">so</code>文件。动态库加载后在系统中只会存有一份，所有依赖它的可执行文件都会共享动态库的<code class="language-plaintext highlighter-rouge">code</code>段，<code class="language-plaintext highlighter-rouge">data</code>段私有。 动态链接的命令如下：</p><pre><code class="language-SHELL">gcc -o main main.o -L${libcolib.so path} -lcolib
+</code></pre><p><img data-src="./协程和libco.assets/Screen Shot 2021-11-08 at 2.27.19 AM.png" alt="Screen Shot 2021-11-08 at 2.27.19 AM" data-proofer-ignore></p><h4 id="运行时的动态链接"><span class="mr-2">运行时的动态链接</span><a href="#运行时的动态链接" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4><p>系统为我们提供了dlsym、dlopen等函数，用于运行时加载动态库。可执行文件在运行时可以加载不同的动态库，这就为hook系统函数提供了基础。</p><p>https://man7.org/linux/man-pages/man3/dlsym.3.html</p><p>dlopen以指定模式打开指定的动态连接库文件，并返回一个句柄给调用进程，dlsym通过句柄和连接符名称获取函数名或者变量名。具体做法在这里就不介绍了。</p><h2 id="参考资料"><span class="mr-2">参考资料</span><a href="#参考资料" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>https://juejin.cn/post/6961414532715511839</p><p>https://github.com/chenyahui/AnnotatedCode/blob/master/coroutine/coroutine.c</p><p>https://www.changliu.me/post/libco-coroutine/</p><p>https://zhuanlan.zhihu.com/p/94018082</p><p>https://www.cyhone.com/articles/analysis-of-libco/</p><p>https://segmentfault.com/a/1190000012834756</p><p>https://runzhiwang.github.io/2019/06/21/libco/</p><p>https://www.zhihu.com/question/52193579</p><p>https://github.com/Tencent/libco/issues/90</p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/%E7%AC%94%E8%AE%B0/'>笔记</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" class="post-tag no-text-decoration" >计算机基础</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> 本文由作者按照 <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> 进行授权</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">分享</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=%E5%8D%8F%E7%A8%8B%E7%AE%80%E4%BB%8B+-+Aye486&url=%2Fposts%2F%25E5%258D%258F%25E7%25A8%258B%25E5%2592%258Clibco%2F" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=%E5%8D%8F%E7%A8%8B%E7%AE%80%E4%BB%8B+-+Aye486&u=%2Fposts%2F%25E5%258D%258F%25E7%25A8%258B%25E5%2592%258Clibco%2F" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=%2Fposts%2F%25E5%258D%258F%25E7%25A8%258B%25E5%2592%258Clibco%2F&text=%E5%8D%8F%E7%A8%8B%E7%AE%80%E4%BB%8B+-+Aye486" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="分享链接" data-title-succeed="链接已复制！"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">最近更新</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/plane-war/">飞机大战</a><li><a href="/posts/hello-world/">你好，世界！</a><li><a href="/posts/%E5%8D%8F%E7%A8%8B%E5%92%8Clibco/">协程简介</a><li><a href="/posts/client/">JAVA-Socket通信 聊天室（客户端）</a><li><a href="/posts/Service/">JAVA-Socket通信 聊天室（服务端）</a></ul></div><div id="access-tags"><div class="panel-heading">热门标签</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/java/">Java</a> <a class="post-tag" href="/tags/%E7%AE%97%E6%B3%95/">算法</a> <a class="post-tag" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a> <a class="post-tag" href="/tags/game/">Game</a> <a class="post-tag" href="/tags/%E7%94%9F%E6%B4%BB/">生活</a> <a class="post-tag" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">文章内容</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 pl-3 pr-3 pr-xl-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>相关文章</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/Search-and-Graph-Theory/"><div class="card-body"> <em class="small" data-ts="1649990880" data-df="YYYY-MM-DD" > 2022-04-15 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>搜索与图论模板</h3><div class="text-muted small"><p> 本篇文章旨在介绍搜索与图论模板。 包括：树与图的存储，拓扑排序，朴素dijkstra，堆优化版dijkstra，Bellman-Ford算法，spfa 算法（队列优化的Bellman-Ford算法），spfa判断图中是否存在负环，floyd算法，朴素版prim算法，Kruskal算法，染色法判别二分图，匈牙利算法 树与图的存储 // 对于每个点k，开一个单链表，存储k所有可以走到的...</p></div></div></a></div><div class="card"> <a href="/posts/data-structure/"><div class="card-body"> <em class="small" data-ts="1649994480" data-df="YYYY-MM-DD" > 2022-04-15 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>数据结构模板</h3><div class="text-muted small"><p> 本篇文章旨在介绍基础数据结构模板。 算法竞赛中，利用指针的数据结构跑的太慢，故使用数组来表示的数据结构 包括：单链表 双链表 栈 队列 单调栈 单调队列 KMP Trie树 并查集 堆 一般哈希 字符串哈希 单链表 // head存储链表头，e[]存储节点的值，ne[]存储节点的next指针，idx表示当前用到了哪个节点 int head, e[N], ne[N], idx;...</p></div></div></a></div><div class="card"> <a href="/posts/tcp-udp/"><div class="card-body"> <em class="small" data-ts="1650027720" data-df="YYYY-MM-DD" > 2022-04-15 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>socket简介</h3><div class="text-muted small"><p> 1：socket大致介绍 socket编程是一门技术，它主要是在网络通信中经常用到 既然是一门技术，由于现在是面向对象的编程，一些计算机行业的大神通过抽象的理念，在现实中通过反复的理论或者实际的推导，提出了抽象的一些通信协议，基于tcp/ip协议，提出大致的构想，一些泛型的程序大牛在这个协议的基础上，将这些抽象化的理念接口化，针对协议提出的每个理念，专门的编写制定的接口，与其协议一一对应...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/client/" class="btn btn-outline-primary" prompt="上一篇"><p>JAVA-Socket通信 聊天室（客户端）</p></a><div class="btn btn-outline-primary disabled" prompt="下一篇"><p>-</p></div></div></div></div><footer class="row pl-3 pr-3"><div class="col-12 d-flex justify-content-between align-items-center text-muted pl-0 pr-0"><div class="footer-left"><p class="mb-0"> © 2022 <a href="https://twitter.com/Aye486">Aye486</a>. <span data-toggle="tooltip" data-placement="top" title="除非另有说明，本网站上的博客文章均由作者按照知识共享署名 4.0 国际 (CC BY 4.0) 许可协议进行授权。">保留部分权利。</span></p></div><div class="footer-right"><p class="mb-0"> 本站由 <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> 生成，采用 <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> 主题。</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">热门标签</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/java/">Java</a> <a class="post-tag" href="/tags/%E7%AE%97%E6%B3%95/">算法</a> <a class="post-tag" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a> <a class="post-tag" href="/tags/game/">Game</a> <a class="post-tag" href="/tags/%E7%94%9F%E6%B4%BB/">生活</a> <a class="post-tag" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><script src="https://cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js"></script> <script> $(function() { function updateMermaid(event) { if (event.source === window && event.data && event.data.direction === ModeToggle.ID) { const mode = event.data.message; if (typeof mermaid === "undefined") { return; } let expectedTheme = (mode === ModeToggle.DARK_MODE? "dark" : "default"); let config = { theme: expectedTheme }; /* Re-render the SVG › <https://github.com/mermaid-js/mermaid/issues/311#issuecomment-332557344> */ $(".mermaid").each(function() { let svgCode = $(this).prev().children().html(); $(this).removeAttr("data-processed"); $(this).html(svgCode); }); mermaid.initialize(config); mermaid.init(undefined, ".mermaid"); } } let initTheme = "default"; if ($("html[data-mode=dark]").length > 0 || ($("html[data-mode]").length == 0 && window.matchMedia("(prefers-color-scheme: dark)").matches ) ) { initTheme = "dark"; } let mermaidConf = { theme: initTheme /* <default|dark|forest|neutral> */ }; /* Markdown converts to HTML */ $("pre").has("code.language-mermaid").each(function() { let svgCode = $(this).children().html(); $(this).addClass("unloaded"); $(this).after(`<div class=\"mermaid\">${svgCode}</div>`); }); mermaid.initialize(mermaidConf); window.addEventListener("message", updateMermaid); }); </script><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a><div id="notification" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-animation="true" data-autohide="false"><div class="toast-header"> <button type="button" class="ml-2 ml-auto close" data-dismiss="toast" aria-label="Close"> <span aria-hidden="true">&times;</span> </button></div><div class="toast-body text-center pt-0"><p class="pl-2 pr-2 mb-3"></p><button type="button" class="btn btn-primary" aria-label="Update"> </button></div></div><script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">搜索结果为空</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/lozad/dist/lozad.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script src="https://cdn.jsdelivr.net/combine/npm/dayjs@1/dayjs.min.js,npm/dayjs@1/locale/asia/jinan.min.js,npm/dayjs@1/plugin/relativeTime.min.js,npm/dayjs@1/plugin/localizedFormat.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.bundle.min.js"></script> <script defer src="/app.js"></script>
