@@ -1,9 +1,9 @@
 ---
 
-title: 通过单类嵌入反向蒸馏进行异常检测 
+title: Anomaly Detection via Reverse Distillation from One-Class Embedding
 date: 2024-10-21 15:02:00 +0800
 categories: [笔记]
-tags: [异常检测][反向蒸馏]
+tags: [异常检测] [反向蒸馏]
 pin: false
 author: Aye486
 
