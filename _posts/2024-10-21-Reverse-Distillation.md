@@ -1,9 +1,10 @@
 ---
-title:  通过单类嵌入反向蒸馏进行异常检测 
+
+title: 通过单类嵌入反向蒸馏进行异常检测 
 date: 2024-10-21 15:02:00 +0800
 categories: [笔记]
 tags: [异常检测][反向蒸馏]
-pin: true
+pin: false
 author: Aye486
 
 toc: true
@@ -11,8 +12,6 @@ comments: true
 typora-root-url: ../../Aye486.github.io
 math: false
 mermaid: true
-
-
 
 ---
 
