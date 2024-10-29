@@ -1,19 +1,3 @@
----
-title:  辨别式学习相似度量，应用于人脸识别
-date: 2024-10-21 10:34:00 +0800
-categories: [笔记]
-tags: [Siamese network][神经网络]
-pin: false
-author: Aye486
-
-toc: true
-comments: true
-typora-root-url: ../../Aye486.github.io
-math: false
-mermaid: true
-
----
-
 # 辨别式学习相似度量，应用于人脸识别
 
 
