@@ -1,24 +1,4 @@
----
 
-title: Reverse Distillation
-date: 2024-10-21 15:02:00 +0800
-categories: [笔记]
-tags: [异常检测] [反向蒸馏]
-pin: false
-author: Aye486
-
-
-toc: true
-comments: true
-typora-root-url: ../../Aye486.github.io
-math: false
-mermaid: true
-
-
-
-
-
----
 
 
 
