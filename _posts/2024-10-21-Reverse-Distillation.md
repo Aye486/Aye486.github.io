@@ -1,6 +1,6 @@
 ---
 
-title: Anomaly Detection via Reverse Distillation from One-Class Embedding
+title: Reverse Distillation
 date: 2024-10-21 15:02:00 +0800
 categories: [笔记]
 tags: [异常检测] [反向蒸馏]
