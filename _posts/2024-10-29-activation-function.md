@@ -38,7 +38,7 @@ mermaid: true
 5. 如何选择合适的激活函数？
 ```
 
-深度学习算法之前的机器学习算法，并不需要对训练数据作[概率统计](https://zhida.zhihu.com/search?content_id=126413738&content_type=Article&match_order=1&q=概率统计&zhida_source=entity)上的假设；但为了让深度学习算法有更好的性能，需要满足的关键要素之一，就是：网络的输入数据服从特定的分布：
+ 深度学习算法之前的机器学习算法，并不需要对训练数据作[概率统计](https://zhida.zhihu.com/search?content_id=126413738&content_type=Article&match_order=1&q=概率统计&zhida_source=entity)上的假设；但为了让深度学习算法有更好的性能，需要满足的关键要素之一，就是：网络的输入数据服从特定的分布：
 
 1. 数据分布应该是[零均值化](https://zhida.zhihu.com/search?content_id=126413738&content_type=Article&match_order=1&q=零均值化&zhida_source=entity)的，即：通过该分布计算得到的均值约等于0。非零均值化的分布可能导致梯度消失和训练抖动。
 2. 更进一步，数据分布最好是正态分布。非正态分布可能导致算法[过拟合](https://zhida.zhihu.com/search?content_id=126413738&content_type=Article&match_order=1&q=过拟合&zhida_source=entity)。
